@@ -27,6 +27,7 @@ my_task = PythonOperator(
     dag=dag
 )
 
+
 pgsl_to_gcs = PostgresToGoogleCloudStorageOperator(
     task_id="postgres_to_gcs",
     postgres_conn_id="postgres-airflow-training",
