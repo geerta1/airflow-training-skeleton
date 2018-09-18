@@ -42,7 +42,7 @@ class HttpToGcsOperator(BaseOperator):
     def execute(self, context):
         http = HttpHook(method=self.method, http_conn_id=self.http_conn_id)
 
-        data = http.run(self, endpoint=self.endpoint)
+        data = http.run(endpoint=self.endpoint)
 
         with NamedTemporaryFile as tmp_file_handle:
             tmp_file_handle.write(data.content)
