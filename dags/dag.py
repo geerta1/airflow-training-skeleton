@@ -26,4 +26,3 @@ my_task = PythonOperator(
     provide_context=True,
     dag=dag
 )
-
