@@ -50,4 +50,4 @@ for currency in {'EUR', 'USD'}:
         gcs_bucket="airflow-training-knab-geert",
         gcs_path="currency/{{ ds }}-" + currency + ".json",
         dag=dag
-    ) 
+    )
