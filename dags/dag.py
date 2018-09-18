@@ -37,3 +37,16 @@ pgsl_to_gcs = PostgresToGoogleCloudStorageOperator(
     filename='land_registry_price_paid_uk/{{ ds }}/properties_{}.json',
     dag=dag
 )
+
+
+for currency in {'EUR', 'USD'}:
+    HttpToGcsOperator(
+        task_id="get_currency_" + currency,
+        method="GET",
+        endpoint="airflow-training-transform-valutas?date={{ ds }}&from=GBP&to=" + currency,
+        http_conn_id="http_airflow_training",
+        gcs_conn_id="google_cloud_default",
+        gcs_bucket="airflow-training-knab-geert"
+        gcs_path="currency/{{ ds }}-" + currency + ".json",
+        dag=dag,
+    ) >> pgsl_to_gcs
