@@ -26,3 +26,12 @@ my_task = PythonOperator(
     provide_context=True,
     dag=dag
 )
+
+pgsl_to_gcs = PostgresToGoogleCloudStorageOperator(
+    task_id="postgres_to_gcs",
+    postgres_conn_id="postgres-airflow-training",
+    sql="SELECT * FROM public.land_registry_price_paid_uk WHERE transfer_date = '{{ ds }}'",
+    bucket='airflow-training-knab-geert',
+    filename='land_registry_price_paid_uk/{{ ds }}/properties_{}.json',
+    dag=dag
+)
