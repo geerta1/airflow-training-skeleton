@@ -6,7 +6,7 @@ from godatadriven.operators.postgres_to_gcs import PostgresToGoogleCloudStorageO
 from operators import HttpToGcsOperator
 
 dag = DAG(
-    dag_id="my_first_dag",
+    dag_id="my_second_dag",
     schedule_interval="30 7 * * *",
     default_args={
         "owner": "airflow",
