@@ -17,7 +17,7 @@ class HttpToGcsOperator(BaseOperator):
     :type gcs_path: string
     """
 
-    template_fields = ("http_conn_id", "endpoint", "gcs_path", "headers", "method")
+    template_fields = ("http_conn_id", "endpoint", "gcs_path", "method")
     template_ext = ()
     ui_color = '#f4a460'
 
