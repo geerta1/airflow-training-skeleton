@@ -16,20 +16,20 @@ class HttpToGcsOperator(BaseOperator):
     :param gcs_path: The path of the GCS to store the result
     :type gcs_path: string
     """
-    
+
     template_fields = ("http_conn_id", "endpoint", "gcs_path", "headers", "method")
     template_ext = ()
     ui_color = '#f4a460'
-    
+
     @apply_defaults
     def __init__(
                 self,
-                http_conn_id="http_default",
                 endpoint,
-                method="GET",
-                gcs_conn_id="gcs_default",
                 gcs_bucket,
                 gcs_path,
+                method="GET",
+                gcs_conn_id="gcs_default",
+                http_conn_id="http_default",
                 *args, **kwargs):
         super(HttpToGcsOperator, self).__init__(*args, **kwargs)
         self.http_conn_id = http_conn_id
@@ -38,16 +38,15 @@ class HttpToGcsOperator(BaseOperator):
         self.gcs_conn_id = gcs_conn_id
         self.method = method
         self.gcs_bucket = gcs_bucket
-        
-        
+
     def execute(self, context):
         http = HttpHook(method=self.method, http_conn_id=self.http_conn_id)
-        
+
         data = http.run(self, endpoint=self.endpoint)
-        
+
         with NamedTemporaryFile as tmp_file_handle:
             tmp_file_handle.write(data.content)
             tmp_file_handle.flush()
-        
+
             gcs = GoogleCloudStorageHook(google_cloud_storage_conn_id=self.gcs_conn_id)
             gcs.upload(bucket=self.bucket, object=self.gcs_path, filename=tmp_file_handle.name)
