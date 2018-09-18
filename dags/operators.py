@@ -17,7 +17,7 @@ class HttpToGcsOperator(BaseOperator):
     :type gcs_path: string
     """
 
-    template_fields = ("http_conn_id", "endpoint", "gcs_path", "method")
+    template_fields = ("http_conn_id", "endpoint", "gcs_path", "gcs_bucket", "method")
     template_ext = ()
     ui_color = '#f4a460'
 
@@ -49,4 +49,4 @@ class HttpToGcsOperator(BaseOperator):
             tmp_file_handle.flush()
 
             gcs = GoogleCloudStorageHook(google_cloud_storage_conn_id=self.gcs_conn_id)
-            gcs.upload(bucket=self.bucket, object=self.gcs_path, filename=tmp_file_handle.name)
+            gcs.upload(bucket=self.gcs_bucket, object=self.gcs_path, filename=tmp_file_handle.name)
