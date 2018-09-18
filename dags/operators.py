@@ -44,7 +44,7 @@ class HttpToGcsOperator(BaseOperator):
 
         data = http.run(endpoint=self.endpoint)
 
-        with NamedTemporaryFile as tmp_file_handle:
+        with NamedTemporaryFile() as tmp_file_handle:
             tmp_file_handle.write(data.content)
             tmp_file_handle.flush()
 
