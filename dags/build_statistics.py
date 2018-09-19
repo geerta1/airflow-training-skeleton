@@ -92,4 +92,4 @@ aggregation\
     .coalesce(1)\
     .write\
     .mode("overwrite")\
-    .parquet("gs://airflow-training-knab-geert/average_prices/transfer_date{}/".format(dt))
+    .parquet("gs://airflow-training-knab-geert/average_prices/transfer_date={}/".format(dt))
