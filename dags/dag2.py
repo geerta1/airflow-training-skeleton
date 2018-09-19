@@ -94,7 +94,7 @@ gcs_to_bq = GoogleCloudStorageToBigQueryOperator(
     task_id="gcs_to_bq",
     bucket="airflow-training-knab-geert",
     source_objects=["average_prices/transfer_date={{ ds }}/*"],
-    destination_project_dataset_table="gdd-airflow-training:prices.land_registry_price${{ ds_nodash }}",
+    destination_project_dataset_table="gdd-25d677142443a8e2ace1927d48:prices.land_registry_price${{ ds_nodash }}",
     source_format="PARQUET",
     write_disposition="WRITE_TRUNCATE",
     dag=dag,
