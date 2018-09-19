@@ -36,6 +36,16 @@ my_task = PythonOperator(
 )
 
 
+dataproc_create_cluster = DataprocClusterCreateOperator(
+    task_id="create_dataproc",
+    cluster_name="analyse-pricing-{{ ds }}",
+    project_id="gdd-25d677142443a8e2ace1927d48",
+    num_workers=2,
+    zone="europe-west4-a",
+    dag=dag,
+)
+
+
 pgsl_to_gcs = PostgresToGoogleCloudStorageOperator(
     task_id="postgres_to_gcs",
     postgres_conn_id="postgres_airflow_training",
@@ -43,7 +53,7 @@ pgsl_to_gcs = PostgresToGoogleCloudStorageOperator(
     bucket='airflow-training-knab-geert',
     filename='land_registry_price_paid_uk/{{ ds }}/properties_{}.json',
     dag=dag
-)
+) >> dataproc_create_cluster
 
 
 for currency in {'EUR', 'USD'}:
@@ -56,17 +66,7 @@ for currency in {'EUR', 'USD'}:
         gcs_bucket="airflow-training-knab-geert",
         gcs_path="currency/{{ ds }}-" + currency + ".json",
         dag=dag
-    )
-
-
-dataproc_create_cluster = DataprocClusterCreateOperator(
-    task_id="create_dataproc",
-    cluster_name="analyse-pricing-{{ ds }}",
-    project_id="gdd-25d677142443a8e2ace1927d48",
-    num_workers=2,
-    zone="europe-west4-a",
-    dag=dag,
-)
+    ) >> dataproc_create_cluster
 
 
 compute_aggregates = DataProcPySparkOperator(
@@ -76,6 +76,7 @@ compute_aggregates = DataProcPySparkOperator(
     arguments=["{{ ds }}"],
     dag=dag,
 )
+dataproc_create_cluster >> compute_aggregates
 
 
 dataproc_delete_cluster = DataprocClusterDeleteOperator(
@@ -85,3 +86,4 @@ dataproc_delete_cluster = DataprocClusterDeleteOperator(
     trigger_rule=TriggerRule.ALL_DONE,
     dag=dag,
 )
+compute_aggregates >> dataproc_delete_cluster
