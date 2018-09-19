@@ -10,6 +10,7 @@ from airflow.contrib.operators.dataproc_operator import (
     DataProcPySparkOperator
 )
 from airflow.utils.trigger_rule import TriggerRule
+from godatadriven.operators.gcs_to_bq import GoogleCloudStorageToBigQueryOperator
 
 dag = DAG(
     dag_id="my_second_dag",
