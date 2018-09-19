@@ -4,6 +4,12 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from godatadriven.operators.postgres_to_gcs import PostgresToGoogleCloudStorageOperator
 from operators import HttpToGcsOperator
+from airflow.contrib.operators.dataproc_operator import (
+    DataprocClusterCreateOperator,
+    DataprocClusterDeleteOperator,
+    DataProcPySparkOperator
+)
+from airflow.utils.trigger_rule import TriggerRule
 
 dag = DAG(
     dag_id="my_second_dag",
@@ -51,3 +57,31 @@ for currency in {'EUR', 'USD'}:
         gcs_path="currency/{{ ds }}-" + currency + ".json",
         dag=dag
     )
+
+
+dataproc_create_cluster = DataprocClusterCreateOperator(
+    task_id="create_dataproc",
+    cluster_name="analyse-pricing-{{ ds }}",
+    project_id="gdd-25d677142443a8e2ace1927d48",
+    num_workers=2,
+    zone="europe-west4-a",
+    dag=dag,
+)
+
+
+compute_aggregates = DataProcPySparkOperator(
+    task_id='compute_aggregates',
+    main='gs://airflow-training-knab-geert/build_statistics.py',
+    cluster_name='analyse-pricing-{{ ds }}',
+    arguments=["{{ ds }}"],
+    dag=dag,
+)
+
+
+dataproc_delete_cluster = DataprocClusterDeleteOperator(
+    task_id="delete_cluster",
+    cluster_name="analyse-pricing-{{ ds }}",
+    project_id="gdd-25d677142443a8e2ace1927d48",
+    trigger_rule=TriggerRule.ALL_DONE,
+    dag=dag,
+)
